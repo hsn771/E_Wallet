@@ -80,6 +80,20 @@ class AuthController extends Controller
         return redirect()->route('dashboard')->with('success', 'Account created successfully!');
     }
 
+    public function updatePassword(Request $request)
+    {
+        $validated = $request->validate([
+            'current_password' => ['required', 'current_password'],
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
+        ]);
+
+        $request->user()->update([
+            'password' => Hash::make($validated['password']),
+        ]);
+
+        return back()->with('success', 'Your password has been successfully updated.');
+    }
+
     public function logout(Request $request)
     {
         Auth::logout();
