@@ -41,6 +41,16 @@ class DashboardController extends Controller
         
         $netWorth = $totalAssets - $totalLiabilities;
 
+        // Total lifetime income & expense for Net Balance calculation
+        $totalAllIncome = Transaction::where('user_id', $user->id)->where('type', 'income')->sum('amount');
+        $totalAllExpense = Transaction::where('user_id', $user->id)->where('type', 'expense')->sum('amount');
+        
+        // Fetch Main Wallet explicitly
+        $mainWalletBalance = Wallet::where('user_id', $user->id)->where('is_default', true)->value('balance') ?? 0;
+
+        // Net Balance = (main wallet + net asset + income) - expense
+        $netBalance = ($mainWalletBalance + $netWorth + $totalAllIncome) - $totalAllExpense;
+
         // 4. Recent Transactions
         $recentTransactions = Transaction::with(['category', 'wallet'])
             ->where('user_id', $user->id)
@@ -57,6 +67,7 @@ class DashboardController extends Controller
             'monthlyIncome', 
             'monthlyExpense', 
             'netWorth',
+            'netBalance',
             'totalAssets',
             'totalLiabilities',
             'recentTransactions',

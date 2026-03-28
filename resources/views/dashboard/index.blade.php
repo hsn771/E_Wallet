@@ -7,7 +7,15 @@
 <div class="space-y-6">
 
     <!-- Top Stats Row -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
+
+        <!-- Net Balance -->
+        <div class="bg-gradient-to-br from-teal-500 to-teal-700 rounded-2xl p-6 shadow-lg shadow-teal-500/30 text-white relative overflow-hidden group">
+            <div class="absolute top-0 right-0 p-4 opacity-30 text-6xl transform group-hover:scale-110 transition-transform">⚖️</div>
+            <p class="text-teal-100 font-medium mb-1 relative z-10">Net Balance</p>
+            <h3 class="text-3xl font-bold relative z-10 truncate">{{ number_format($netBalance, 2) }} <span class="text-lg font-medium">{{ auth()->user()->currency }}</span></h3>
+            <div class="mt-4 relative z-10 text-xs text-teal-200 opacity-80 uppercase tracking-widest">(M.Wallet + Net + In) - Out</div>
+        </div>
         
         <!-- Total Balance -->
         <div class="bg-gradient-to-br from-indigo-500 to-indigo-700 rounded-2xl p-6 shadow-lg shadow-indigo-500/30 text-white relative overflow-hidden group">
