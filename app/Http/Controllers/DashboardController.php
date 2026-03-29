@@ -48,10 +48,14 @@ class DashboardController extends Controller
         // Fetch Main Wallet explicitly
         $mainWalletBalance = Wallet::where('user_id', $user->id)->where('is_default', true)->value('balance') ?? 0;
 
-        // Net Balance = (main wallet + net asset + income) - expense
-        $netBalance = ($mainWalletBalance + $netWorth + $totalAllIncome) - $totalAllExpense;
+        // Net Balance = (main wallet + total assets) - total liabilities
+        $netBalance = ($mainWalletBalance + $totalAssets) - $totalLiabilities;
 
-        // 4. Recent Transactions
+        // 4. Fetch lists for breakdown
+        $assets = Asset::where('user_id', $user->id)->get();
+        $liabilities = Liability::where('user_id', $user->id)->get();
+
+        // 5. Recent Transactions
         $recentTransactions = Transaction::with(['category', 'wallet'])
             ->where('user_id', $user->id)
             ->orderBy('date', 'desc')
@@ -59,7 +63,7 @@ class DashboardController extends Controller
             ->take(6)
             ->get();
 
-        // 5. Chart Data (Last 6 Months Income vs Expense)
+        // 6. Chart Data (Last 6 Months Income vs Expense)
         $chartData = $this->getChartData($user->id);
 
         return view('dashboard.index', compact(
@@ -71,7 +75,12 @@ class DashboardController extends Controller
             'totalAssets',
             'totalLiabilities',
             'recentTransactions',
-            'chartData'
+            'chartData',
+            'mainWalletBalance',
+            'totalAllIncome',
+            'totalAllExpense',
+            'assets',
+            'liabilities'
         ));
     }
 
