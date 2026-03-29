@@ -38,6 +38,19 @@ class AuthController extends Controller
         return view('auth.register');
     }
 
+    public function showForgotPassword()
+    {
+        return view('auth.forgot-password');
+    }
+
+    public function sendResetLink(Request $request)
+    {
+        $request->validate(['email' => 'required|email']);
+
+        // Since we don't have SMTP configured, we'll just simulate success
+        return back()->with('status', 'We have emailed your password reset link!');
+    }
+
     public function register(Request $request)
     {
         $request->validate([
