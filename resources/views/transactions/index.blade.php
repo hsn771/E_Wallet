@@ -56,7 +56,7 @@
                         </td>
                         <td class="py-4 px-4 text-right">
                             <span class="font-bold text-lg {{ $tx->type == 'income' ? 'text-emerald-400' : 'text-rose-400' }}">
-                                {{ $tx->type == 'income' ? '+' : '-' }}{{ number_format($tx->amount, 2) }}
+                                {{ $tx->type == 'income' ? '+' : '-' }}{{ number_format($tx->amount, 0) }}
                             </span>
                         </td>
                     </tr>
@@ -126,7 +126,7 @@
                     <label class="block text-sm font-medium text-slate-300 mb-1">Wallet</label>
                     <select name="wallet_id" required class="w-full bg-slate-900 border border-slate-700 focus:border-indigo-500 rounded-xl px-4 py-3 text-white">
                         @foreach($wallets as $wallet)
-                            <option value="{{ $wallet->id }}">{{ $wallet->name }} (Balance: {{ number_format($wallet->balance, 2) }})</option>
+                            <option value="{{ $wallet->id }}">{{ $wallet->name }} (Balance: {{ number_format($wallet->balance, 0) }})</option>
                         @endforeach
                     </select>
                 </div>

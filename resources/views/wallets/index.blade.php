@@ -29,7 +29,7 @@
             <div class="mt-6 mb-8">
                 <p class="text-sm text-slate-400 mb-1">Available Balance</p>
                 <h2 class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-teal-400">
-                    {{ number_format($wallet->balance, 2) }} <span class="text-sm font-medium text-slate-500">{{ auth()->user()->currency }}</span>
+                    {{ number_format($wallet->balance, 0) }} <span class="text-sm font-medium text-slate-500">{{ auth()->user()->currency }}</span>
                 </h2>
             </div>
             

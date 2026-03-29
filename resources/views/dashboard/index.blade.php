@@ -13,7 +13,7 @@
         <div class="bg-gradient-to-br from-teal-500 to-teal-700 rounded-2xl p-6 shadow-lg shadow-teal-500/30 text-white relative overflow-hidden group">
             <div class="absolute top-0 right-0 p-4 opacity-30 text-6xl transform group-hover:scale-110 transition-transform">⚖️</div>
             <p class="text-teal-100 font-medium mb-1 relative z-10">Net Balance</p>
-            <h3 class="text-3xl font-bold relative z-10 truncate">{{ number_format($netBalance, 2) }} <span class="text-lg font-medium">{{ auth()->user()->currency }}</span></h3>
+            <h3 class="text-3xl font-bold relative z-10"><span class="break-all">{{ number_format($netBalance, 0) }}</span> <span class="text-lg font-medium whitespace-nowrap">{{ auth()->user()->currency }}</span></h3>
             <div class="mt-4 relative z-10 text-xs text-teal-200 opacity-80 uppercase tracking-widest">(M.Wallet + Net + In) - Out</div>
         </div>
         
@@ -21,7 +21,7 @@
         <div class="bg-gradient-to-br from-indigo-500 to-indigo-700 rounded-2xl p-6 shadow-lg shadow-indigo-500/30 text-white relative overflow-hidden group">
             <div class="absolute top-0 right-0 p-4 opacity-50 text-6xl transform group-hover:scale-110 transition-transform">💰</div>
             <p class="text-indigo-100 font-medium mb-1 relative z-10">Total Balance</p>
-            <h3 class="text-3xl font-bold relative z-10">{{ number_format($totalBalance, 2) }} <span class="text-lg">{{ auth()->user()->currency }}</span></h3>
+            <h3 class="text-3xl font-bold relative z-10"><span class="break-all">{{ number_format($totalBalance, 0) }}</span> <span class="text-lg whitespace-nowrap">{{ auth()->user()->currency }}</span></h3>
             <div class="mt-4 relative z-10">
                 <a href="{{ route('wallets.index') }}" class="text-sm border border-indigo-400/50 rounded-lg px-3 py-1 hover:bg-white/10 transition">View Wallets</a>
             </div>
@@ -31,7 +31,7 @@
         <div class="bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700 rounded-2xl p-6 shadow-lg relative overflow-hidden group">
             <div class="absolute top-0 right-0 p-4 opacity-10 text-6xl transform group-hover:scale-110 transition-transform text-white">💎</div>
             <p class="text-slate-400 font-medium mb-1 relative z-10">Net Worth</p>
-            <h3 class="text-3xl font-bold text-white relative z-10">{{ number_format($netWorth, 2) }} <span class="text-lg text-slate-500">{{ auth()->user()->currency }}</span></h3>
+            <h3 class="text-3xl font-bold text-white relative z-10"><span class="break-all">{{ number_format($netWorth, 0) }}</span> <span class="text-lg text-slate-500 whitespace-nowrap">{{ auth()->user()->currency }}</span></h3>
             <div class="mt-4 relative z-10 flex gap-2">
                 <span class="text-xs text-emerald-400 bg-emerald-400/10 px-2 py-1 rounded">A: {{ number_format($totalAssets, 0) }}</span>
                 <span class="text-xs text-rose-400 bg-rose-400/10 px-2 py-1 rounded">L: {{ number_format($totalLiabilities, 0) }}</span>
@@ -42,7 +42,7 @@
         <div class="bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700 rounded-2xl p-6 shadow-lg relative overflow-hidden group hover:border-emerald-500/50 transition-colors">
             <div class="absolute top-0 right-0 p-4 opacity-10 text-6xl transform group-hover:scale-110 transition-transform text-emerald-500">📈</div>
             <p class="text-slate-400 font-medium mb-1 relative z-10">Monthly Income</p>
-            <h3 class="text-3xl font-bold text-emerald-400 relative z-10">+{{ number_format($monthlyIncome, 2) }}</h3>
+            <h3 class="text-3xl font-bold text-emerald-400 relative z-10 break-all">+{{ number_format($monthlyIncome, 0) }}</h3>
             <div class="mt-4 relative z-10 truncate text-xs text-slate-500">This Month</div>
         </div>
 
@@ -50,7 +50,7 @@
         <div class="bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700 rounded-2xl p-6 shadow-lg relative overflow-hidden group hover:border-rose-500/50 transition-colors">
             <div class="absolute top-0 right-0 p-4 opacity-10 text-6xl transform group-hover:scale-110 transition-transform text-rose-500">📉</div>
             <p class="text-slate-400 font-medium mb-1 relative z-10">Monthly Expense</p>
-            <h3 class="text-3xl font-bold text-rose-400 relative z-10">-{{ number_format($monthlyExpense, 2) }}</h3>
+            <h3 class="text-3xl font-bold text-rose-400 relative z-10 break-all">-{{ number_format($monthlyExpense, 0) }}</h3>
             <div class="mt-4 relative z-10 truncate text-xs text-slate-500">This Month</div>
         </div>
 
@@ -88,7 +88,7 @@
                         </div>
                         <div class="text-right">
                             <p class="font-bold {{ $tx->type == 'income' ? 'text-emerald-400' : 'text-rose-400' }}">
-                                {{ $tx->type == 'income' ? '+' : '-' }}{{ number_format($tx->amount, 2) }}
+                                {{ $tx->type == 'income' ? '+' : '-' }}{{ number_format($tx->amount, 0) }}
                             </p>
                         </div>
                     </div>

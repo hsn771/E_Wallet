@@ -52,7 +52,18 @@
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-slate-300 mb-1">Icon (Emoji)</label>
-                    <input type="text" name="icon" required class="w-full bg-slate-900 border border-slate-700 focus:border-indigo-500 rounded-xl px-4 py-3 text-white">
+                    <input type="text" id="categoryIcon" name="icon" required class="w-full bg-slate-900 border border-slate-700 focus:border-indigo-500 rounded-xl px-4 py-3 text-white text-xl">
+                    <div class="mt-3 flex flex-wrap gap-2">
+                        @php
+                            $emojis = ['💰', '🍔', '🛒', '🚗', '💡', '🏠', '🏥', '🎉', '✈️', '📱', '⛽', '☕', '👕', '🎬', '🎓'];
+                        @endphp
+                        @foreach($emojis as $emoji)
+                            <button type="button" onclick="document.getElementById('categoryIcon').value = '{{ $emoji }}'" class="w-10 h-10 bg-slate-800 hover:bg-slate-700 rounded-lg text-xl transition flex items-center justify-center border border-slate-700 hover:border-indigo-500">
+                                {{ $emoji }}
+                            </button>
+                        @endforeach
+                    </div>
+                    <p class="text-xs text-slate-400 mt-2">Click an emoji above, or press <kbd class="px-1.5 py-0.5 bg-slate-800 border border-slate-700 rounded">Win + .</kbd> to open native picker.</p>
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-slate-300 mb-1">Type</label>

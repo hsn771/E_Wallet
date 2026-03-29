@@ -16,7 +16,7 @@
         <div>
             <p class="text-slate-400 font-medium">Total Liabilities</p>
             <h2 class="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-rose-400 to-red-400">
-                -{{ number_format($liabilities->sum('amount'), 2) }} <span class="text-lg text-slate-500">{{ auth()->user()->currency }}</span>
+                -{{ number_format($liabilities->sum('amount'), 0) }} <span class="text-lg text-slate-500">{{ auth()->user()->currency }}</span>
             </h2>
         </div>
     </div>
@@ -28,7 +28,11 @@
             <div class="flex justify-between items-start mb-4">
                 <div>
                     <h3 class="text-xl font-bold text-white">{{ $liability->name }}</h3>
-                    <p class="text-xs text-slate-400 uppercase tracking-wider">{{ str_replace('_', ' ', $liability->type) }}</p>
+                    <div class="flex items-center gap-2 mt-0.5">
+                        <p class="text-xs text-slate-400 uppercase tracking-wider">{{ str_replace('_', ' ', $liability->type) }}</p>
+                        <span class="w-1 h-1 rounded-full bg-slate-600"></span>
+                        <p class="text-xs text-slate-500">{{ $liability->created_at->format('M d, Y') }}</p>
+                    </div>
                 </div>
                 <form action="{{ route('liabilities.destroy', $liability) }}" method="POST" onsubmit="return confirm('Are you sure?');">
                     @csrf
@@ -41,7 +45,7 @@
             
             <div class="mt-4">
                 <h2 class="text-2xl font-bold text-rose-400">
-                    -{{ number_format($liability->amount, 2) }}
+                    -{{ number_format($liability->amount, 0) }}
                 </h2>
             </div>
         </div>
