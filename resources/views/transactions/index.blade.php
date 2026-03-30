@@ -11,11 +11,38 @@
 @section('content')
 <div class="bg-slate-800/50 backdrop-blur-md border border-slate-700 rounded-3xl p-6 shadow-xl relative">
     
-    <!-- Filters -->
-    <div class="flex flex-wrap gap-4 mb-8">
-        <a href="{{ route('transactions.index') }}" class="px-4 py-2 rounded-xl border {{ !request('type') ? 'bg-indigo-500/20 border-indigo-500 text-indigo-400' : 'border-slate-700 text-slate-400 hover:bg-slate-700' }}">All</a>
-        <a href="{{ route('transactions.index', ['type' => 'income']) }}" class="px-4 py-2 rounded-xl border {{ request('type') == 'income' ? 'bg-emerald-500/20 border-emerald-500 text-emerald-400' : 'border-slate-700 text-slate-400 hover:bg-slate-700' }}">Income</a>
-        <a href="{{ route('transactions.index', ['type' => 'expense']) }}" class="px-4 py-2 rounded-xl border {{ request('type') == 'expense' ? 'bg-rose-500/20 border-rose-500 text-rose-400' : 'border-slate-700 text-slate-400 hover:bg-slate-700' }}">Expense</a>
+    <!-- Filters & Actions -->
+    <div class="flex flex-wrap items-center justify-between gap-4 mb-8">
+        <div class="flex flex-wrap gap-3">
+            <a href="{{ route('transactions.index', ['month' => $selectedMonth, 'year' => $selectedYear]) }}" class="px-4 py-2 rounded-xl border {{ !request('type') ? 'bg-indigo-500/20 border-indigo-500 text-indigo-400' : 'border-slate-700 text-slate-400 hover:bg-slate-700' }}">All</a>
+            <a href="{{ route('transactions.index', ['type' => 'income', 'month' => $selectedMonth, 'year' => $selectedYear]) }}" class="px-4 py-2 rounded-xl border {{ request('type') == 'income' ? 'bg-emerald-500/20 border-emerald-500 text-emerald-400' : 'border-slate-700 text-slate-400 hover:bg-slate-700' }}">Income</a>
+            <a href="{{ route('transactions.index', ['type' => 'expense', 'month' => $selectedMonth, 'year' => $selectedYear]) }}" class="px-4 py-2 rounded-xl border {{ request('type') == 'expense' ? 'bg-rose-500/20 border-rose-500 text-rose-400' : 'border-slate-700 text-slate-400 hover:bg-slate-700' }}">Expense</a>
+        </div>
+
+        <form action="{{ route('transactions.index') }}" method="GET" class="flex flex-wrap items-center gap-3">
+            @if(request('type'))
+                <input type="hidden" name="type" value="{{ request('type') }}">
+            @endif
+            
+            <div class="flex items-center gap-2">
+                <select name="month" onchange="this.form.submit()" class="bg-slate-900 border border-slate-700 text-slate-300 rounded-xl px-3 py-2 focus:border-indigo-500 outline-none">
+                    @for($m = 1; $m <= 12; $m++)
+                        <option value="{{ $m }}" {{ $selectedMonth == $m ? 'selected' : '' }}>{{ date('F', mktime(0, 0, 0, $m, 1)) }}</option>
+                    @endfor
+                </select>
+
+                <select name="year" onchange="this.form.submit()" class="bg-slate-900 border border-slate-700 text-slate-300 rounded-xl px-3 py-2 focus:border-indigo-500 outline-none">
+                    @php $startYear = date('Y') - 5; @endphp
+                    @for($y = $startYear; $y <= date('Y') + 1; $y++)
+                        <option value="{{ $y }}" {{ $selectedYear == $y ? 'selected' : '' }}>{{ $y }}</option>
+                    @endfor
+                </select>
+            </div>
+
+            <a href="{{ route('transactions.downloadPdf', request()->all()) }}" class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-xl transition flex items-center gap-2 shadow-lg hover:shadow-emerald-500/25">
+                <span>📄</span> Print PDF
+            </a>
+        </form>
     </div>
 
     <!-- Table -->

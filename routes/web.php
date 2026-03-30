@@ -36,6 +36,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/wallets/{wallet}/add-balance', [WalletController::class, 'addBalance'])->name('wallets.addBalance');
     
     // Transactions
+    Route::get('/transactions/pdf', [TransactionController::class, 'downloadPdf'])->name('transactions.downloadPdf');
     Route::resource('transactions', TransactionController::class);
     
     // Categories

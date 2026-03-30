@@ -7,6 +7,7 @@ use App\Models\Wallet;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class TransactionController extends Controller
 {
@@ -21,11 +22,55 @@ class TransactionController extends Controller
             $query->where('type', $request->type);
         }
 
+        // Monthly Filter
+        $selectedMonth = $request->get('month', now()->month);
+        $selectedYear = $request->get('year', now()->year);
+        
+        $query->whereMonth('date', $selectedMonth)
+              ->whereYear('date', $selectedYear);
+
         $transactions = $query->paginate(15);
         $wallets = Wallet::where('user_id', Auth::id())->get();
         $categories = Category::where('user_id', Auth::id())->orWhereNull('user_id')->get();
 
-        return view('transactions.index', compact('transactions', 'wallets', 'categories'));
+        return view('transactions.index', compact('transactions', 'wallets', 'categories', 'selectedMonth', 'selectedYear'));
+    }
+
+    public function downloadPdf(Request $request)
+    {
+        $selectedMonth = $request->get('month', now()->month);
+        $selectedYear = $request->get('year', now()->year);
+        $type = $request->get('type');
+
+        $query = Transaction::with(['wallet', 'category'])
+            ->where('user_id', Auth::id())
+            ->whereMonth('date', $selectedMonth)
+            ->whereYear('date', $selectedYear)
+            ->orderBy('date', 'asc');
+
+        if ($type && in_array($type, ['income', 'expense', 'transfer'])) {
+            $query->where('type', $type);
+        }
+
+        $transactions = $query->get();
+
+        // Calculate Totals
+        $totalIncome = $transactions->where('type', 'income')->sum('amount');
+        $totalExpense = $transactions->where('type', 'expense')->sum('amount');
+        $netBalance = $totalIncome - $totalExpense;
+
+        $data = [
+            'transactions' => $transactions,
+            'monthName' => date('F', mktime(0, 0, 0, $selectedMonth, 1)),
+            'year' => $selectedYear,
+            'totalIncome' => $totalIncome,
+            'totalExpense' => $totalExpense,
+            'netBalance' => $netBalance,
+            'user' => Auth::user(),
+        ];
+
+        $pdf = Pdf::loadView('transactions.pdf', $data);
+        return $pdf->download("Transactions_{$data['monthName']}_{$selectedYear}.pdf");
     }
 
     public function store(Request $request)
