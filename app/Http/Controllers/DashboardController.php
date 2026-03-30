@@ -48,8 +48,8 @@ class DashboardController extends Controller
         // Fetch Main Wallet explicitly
         $mainWalletBalance = Wallet::where('user_id', $user->id)->where('is_default', true)->value('balance') ?? 0;
 
-        // Net Balance = (main wallet + total assets) - total liabilities
-        $netBalance = ($mainWalletBalance + $totalAssets) - $totalLiabilities;
+        // Net Balance = (main wallet + total assets)
+        $netBalance = $mainWalletBalance + $totalAssets;
 
         // 4. Fetch lists for breakdown
         $assets = Asset::where('user_id', $user->id)->get();

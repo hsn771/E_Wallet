@@ -18,7 +18,7 @@ class AssetController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'type' => 'required|in:cash,bank,property,investment,other',
+            'type' => 'required|in:cash,bank,property,investment,accounts_receivable,other',
             'value' => 'required|numeric|min:0',
         ]);
 
@@ -31,6 +31,26 @@ class AssetController extends Controller
         ]);
 
         return redirect()->route('assets.index')->with('success', 'Asset recorded successfully.');
+    }
+
+    public function update(Request $request, Asset $asset)
+    {
+        if ($asset->user_id !== Auth::id()) abort(403);
+
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'type' => 'required|in:cash,bank,property,investment,accounts_receivable,other',
+            'value' => 'required|numeric|min:0',
+        ]);
+
+        $asset->update([
+            'name' => $request->name,
+            'type' => $request->type,
+            'value' => $request->value,
+            'description' => $request->description,
+        ]);
+
+        return redirect()->route('assets.index')->with('success', 'Asset updated successfully.');
     }
 
     public function destroy(Asset $asset)

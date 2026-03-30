@@ -119,7 +119,7 @@
                 <td>{{ $tx->date->format('M d, Y') }}</td>
                 <td>{{ $tx->category ? $tx->category->name : 'N/A' }}</td>
                 <td>{{ $tx->description ?: '-' }}</td>
-                <td>{{ $tx->wallet->name }}</td>
+                <td>{{ $tx->wallet ? $tx->wallet->name : 'Asset' }}</td>
                 <td class="text-right {{ $tx->type == 'income' ? 'income' : 'expense' }}">
                     {{ $tx->type == 'income' ? '+' : '-' }}{{ number_format($tx->amount, 2) }}
                 </td>

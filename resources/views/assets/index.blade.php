@@ -34,13 +34,18 @@
                         <p class="text-xs text-slate-500">{{ $asset->created_at->format('M d, Y') }}</p>
                     </div>
                 </div>
-                <form action="{{ route('assets.destroy', $asset) }}" method="POST" onsubmit="return confirm('Are you sure?');">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit" class="opacity-0 group-hover:opacity-100 p-1 text-slate-500 hover:text-red-400 transition">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                <div class="flex items-center gap-1">
+                    <button onclick="openEditAssetModal({{ json_encode($asset) }})" class="opacity-0 group-hover:opacity-100 p-1 text-slate-500 hover:text-indigo-400 transition">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
                     </button>
-                </form>
+                    <form action="{{ route('assets.destroy', $asset) }}" method="POST" onsubmit="return confirm('Are you sure?');">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="opacity-0 group-hover:opacity-100 p-1 text-slate-500 hover:text-red-400 transition">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                        </button>
+                    </form>
+                </div>
             </div>
             
             <div class="mt-4">
@@ -59,12 +64,13 @@
 
 <!-- Add Asset Modal -->
 <div id="addAssetModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-slate-800 border border-slate-700 rounded-3xl w-full max-w-md p-6 shadow-2xl">
-        <div class="flex justify-between items-center mb-6">
+    <div class="bg-slate-800 border border-slate-700 rounded-3xl w-full max-w-md p-6 shadow-2xl relative overflow-hidden">
+        <div class="absolute -top-10 -right-10 w-32 h-32 bg-emerald-500/10 blur-3xl rounded-full"></div>
+        <div class="flex justify-between items-center mb-6 relative z-10">
             <h3 class="text-xl font-bold text-white">Add Asset</h3>
             <button onclick="document.getElementById('addAssetModal').classList.add('hidden')" class="text-slate-400 hover:text-white text-2xl">&times;</button>
         </div>
-        <form action="{{ route('assets.store') }}" method="POST">
+        <form action="{{ route('assets.store') }}" method="POST" class="relative z-10">
             @csrf
             <div class="space-y-4">
                 <div>
@@ -78,19 +84,77 @@
                         <option value="bank">Bank Balance</option>
                         <option value="property">Property</option>
                         <option value="investment">Investment</option>
+                        <option value="accounts_receivable">Accounts Receivable</option>
                         <option value="other">Other</option>
                     </select>
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-slate-300 mb-1">Value ({{ auth()->user()->currency }})</label>
+                    <label class="block text-sm font-medium text-slate-300 mb-1">Value ({{ auth()->user()->currency ?? 'BDT' }})</label>
                     <input type="number" step="0.01" name="value" required class="w-full bg-slate-900 border border-slate-700 focus:border-emerald-500 rounded-xl px-4 py-3 text-white">
                 </div>
             </div>
-            <div class="mt-8 flex justify-end gap-3">
-                <button type="button" onclick="document.getElementById('addAssetModal').classList.add('hidden')" class="px-5 py-2.5 rounded-xl border border-slate-600 text-slate-300 hover:bg-slate-700">Cancel</button>
-                <button type="submit" class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-medium">Save Asset</button>
+            <div class="mt-8 flex justify-end gap-3 pt-4 border-t border-slate-700/50">
+                <button type="button" onclick="document.getElementById('addAssetModal').classList.add('hidden')" class="px-5 py-2.5 rounded-xl border border-slate-600 text-slate-300 hover:bg-slate-700 transition">Cancel</button>
+                <button type="submit" class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-medium shadow-lg shadow-emerald-500/25 transition">Save Asset</button>
             </div>
         </form>
     </div>
 </div>
+
+<!-- Edit Asset Modal -->
+<div id="editAssetModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-slate-800 border border-slate-700 rounded-3xl w-full max-w-md p-6 shadow-2xl relative overflow-hidden">
+        <div class="absolute -top-10 -right-10 w-32 h-32 bg-indigo-500/10 blur-3xl rounded-full"></div>
+        <div class="flex justify-between items-center mb-6 relative z-10">
+            <h3 class="text-xl font-bold text-white">Edit Asset</h3>
+            <button onclick="document.getElementById('editAssetModal').classList.add('hidden')" class="text-slate-400 hover:text-white text-2xl">&times;</button>
+        </div>
+        <form id="editAssetForm" method="POST" class="relative z-10">
+            @csrf
+            @method('PUT')
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-slate-300 mb-1">Name</label>
+                    <input type="text" name="name" id="edit_asset_name" required class="w-full bg-slate-900 border border-slate-700 focus:border-indigo-500 rounded-xl px-4 py-3 text-white placeholder-slate-600">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-300 mb-1">Type</label>
+                    <select name="type" id="edit_asset_type" required class="w-full bg-slate-900 border border-slate-700 focus:border-indigo-500 rounded-xl px-4 py-3 text-white">
+                        <option value="cash">Cash</option>
+                        <option value="bank">Bank Balance</option>
+                        <option value="property">Property</option>
+                        <option value="investment">Investment</option>
+                        <option value="accounts_receivable">Accounts Receivable</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-300 mb-1">Value ({{ auth()->user()->currency ?? 'BDT' }})</label>
+                    <input type="number" step="0.01" name="value" id="edit_asset_value" required class="w-full bg-slate-900 border border-slate-700 focus:border-indigo-500 rounded-xl px-4 py-3 text-white">
+                </div>
+            </div>
+            <div class="mt-8 flex justify-end gap-3 pt-4 border-t border-slate-700/50">
+                <button type="button" onclick="document.getElementById('editAssetModal').classList.add('hidden')" class="px-5 py-2.5 rounded-xl border border-slate-600 text-slate-300 hover:bg-slate-700 transition">Cancel</button>
+                <button type="submit" class="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-medium shadow-lg shadow-indigo-500/25 transition">Update Asset</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function openEditAssetModal(asset) {
+        const modal = document.getElementById('editAssetModal');
+        const form = document.getElementById('editAssetForm');
+        
+        // Update form action URL structure: /assets/{id}
+        form.action = `/assets/${asset.id}`;
+        
+        // Fill form fields
+        document.getElementById('edit_asset_name').value = asset.name;
+        document.getElementById('edit_asset_type').value = asset.type;
+        document.getElementById('edit_asset_value').value = asset.value;
+        
+        modal.classList.remove('hidden');
+    }
+</script>
 @endsection

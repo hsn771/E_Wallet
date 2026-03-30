@@ -78,7 +78,7 @@
                         </td>
                         <td class="py-4 px-4">
                             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
-                                {{ $tx->wallet->name }}
+                                {{ $tx->wallet ? $tx->wallet->name : 'Asset' }}
                             </span>
                         </td>
                         <td class="py-4 px-4 text-right">

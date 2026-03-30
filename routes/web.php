@@ -46,5 +46,6 @@ Route::middleware('auth')->group(function () {
     Route::resource('assets', AssetController::class);
     
     // Liabilities
+    Route::post('/liabilities/{liability}/pay', [LiabilityController::class, 'pay'])->name('liabilities.pay');
     Route::resource('liabilities', LiabilityController::class);
 });
