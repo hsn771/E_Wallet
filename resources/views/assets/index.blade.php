@@ -30,6 +30,10 @@
                     <h3 class="text-xl font-bold text-white">{{ $asset->name }}</h3>
                     <div class="flex items-center gap-2 mt-0.5">
                         <p class="text-xs text-slate-400 uppercase tracking-wider">{{ str_replace('_', ' ', $asset->type) }}</p>
+                        @if($asset->type === 'accounts_receivable' && $asset->source)
+                            <span class="w-1 h-1 rounded-full bg-slate-600"></span>
+                            <p class="text-xs text-emerald-400 font-medium">via {{ $asset->source->name ?? 'Deleted Source' }}</p>
+                        @endif
                         <span class="w-1 h-1 rounded-full bg-slate-600"></span>
                         <p class="text-xs text-slate-500">{{ $asset->created_at->format('M d, Y') }}</p>
                     </div>
@@ -79,7 +83,7 @@
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-slate-300 mb-1">Type</label>
-                    <select name="type" required class="w-full bg-slate-900 border border-slate-700 focus:border-emerald-500 rounded-xl px-4 py-3 text-white">
+                    <select name="type" id="add_asset_type" onchange="toggleSourceFields('add')" required class="w-full bg-slate-900 border border-slate-700 focus:border-emerald-500 rounded-xl px-4 py-3 text-white">
                         <option value="cash">Cash</option>
                         <option value="bank">Bank Balance</option>
                         <option value="property">Property</option>
@@ -87,6 +91,21 @@
                         <option value="accounts_receivable">Accounts Receivable</option>
                         <option value="other">Other</option>
                     </select>
+                </div>
+                <div id="add_source_selection" style="display: none;" class="grid grid-cols-2 gap-3 p-4 bg-slate-900/50 rounded-2xl border border-slate-700/50">
+                    <div class="col-span-1">
+                        <label class="block text-xs font-medium text-slate-500 mb-1 uppercase tracking-wider">Source Type</label>
+                        <select name="source_type" id="add_source_type" onchange="updateSourceOptions('add')" class="w-full bg-slate-900 border border-slate-700 focus:border-emerald-500 rounded-xl px-3 py-2 text-sm text-white">
+                            <option value="wallet">Wallet</option>
+                            <option value="asset">Asset (Bank)</option>
+                        </select>
+                    </div>
+                    <div class="col-span-1">
+                        <label class="block text-xs font-medium text-slate-500 mb-1 uppercase tracking-wider">Target Account</label>
+                        <select name="source_id" id="add_source_id" class="w-full bg-slate-900 border border-slate-700 focus:border-emerald-500 rounded-xl px-3 py-2 text-sm text-white">
+                            <!-- Options populated by JS -->
+                        </select>
+                    </div>
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-slate-300 mb-1">Value ({{ auth()->user()->currency ?? 'BDT' }})</label>
@@ -119,7 +138,7 @@
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-slate-300 mb-1">Type</label>
-                    <select name="type" id="edit_asset_type" required class="w-full bg-slate-900 border border-slate-700 focus:border-indigo-500 rounded-xl px-4 py-3 text-white">
+                    <select name="type" id="edit_asset_type" onchange="toggleSourceFields('edit')" required class="w-full bg-slate-900 border border-slate-700 focus:border-indigo-500 rounded-xl px-4 py-3 text-white">
                         <option value="cash">Cash</option>
                         <option value="bank">Bank Balance</option>
                         <option value="property">Property</option>
@@ -127,6 +146,21 @@
                         <option value="accounts_receivable">Accounts Receivable</option>
                         <option value="other">Other</option>
                     </select>
+                </div>
+                <div id="edit_source_selection" style="display: none;" class="grid grid-cols-2 gap-3 p-4 bg-slate-900/50 rounded-2xl border border-slate-700/50">
+                    <div class="col-span-1">
+                        <label class="block text-xs font-medium text-slate-500 mb-1 uppercase tracking-wider">Source Type</label>
+                        <select name="source_type" id="edit_source_type" onchange="updateSourceOptions('edit')" class="w-full bg-slate-900 border border-slate-700 focus:border-indigo-500 rounded-xl px-3 py-2 text-sm text-white">
+                            <option value="wallet">Wallet</option>
+                            <option value="asset">Asset (Bank)</option>
+                        </select>
+                    </div>
+                    <div class="col-span-1">
+                        <label class="block text-xs font-medium text-slate-500 mb-1 uppercase tracking-wider">Target Account</label>
+                        <select name="source_id" id="edit_source_id" class="w-full bg-slate-900 border border-slate-700 focus:border-indigo-500 rounded-xl px-3 py-2 text-sm text-white">
+                            <!-- Options populated by JS -->
+                        </select>
+                    </div>
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-slate-300 mb-1">Value ({{ auth()->user()->currency ?? 'BDT' }})</label>
@@ -142,6 +176,39 @@
 </div>
 
 <script>
+    const wallets = @json($wallets);
+    const bankAssets = @json($bankAssets);
+
+    function toggleSourceFields(mode) {
+        const typeSelect = document.getElementById(`${mode}_asset_type`);
+        const sourceSelection = document.getElementById(`${mode}_source_selection`);
+        
+        if (typeSelect.value === 'accounts_receivable') {
+            sourceSelection.style.display = 'grid';
+            updateSourceOptions(mode);
+        } else {
+            sourceSelection.style.display = 'none';
+        }
+    }
+
+    function updateSourceOptions(mode, selectedId = null) {
+        const sourceType = document.getElementById(`${mode}_source_type`).value;
+        const sourceIdSelect = document.getElementById(`${mode}_source_id`);
+        sourceIdSelect.innerHTML = '';
+        
+        let options = sourceType === 'wallet' ? wallets : bankAssets;
+        
+        options.forEach(opt => {
+            const option = document.createElement('option');
+            option.value = opt.id;
+            option.textContent = opt.name;
+            if (selectedId && opt.id == selectedId) {
+                option.selected = true;
+            }
+            sourceIdSelect.appendChild(option);
+        });
+    }
+
     function openEditAssetModal(asset) {
         const modal = document.getElementById('editAssetModal');
         const form = document.getElementById('editAssetForm');
@@ -153,6 +220,16 @@
         document.getElementById('edit_asset_name').value = asset.name;
         document.getElementById('edit_asset_type').value = asset.type;
         document.getElementById('edit_asset_value').value = asset.value;
+        
+        if (asset.type === 'accounts_receivable') {
+            document.getElementById('edit_source_selection').style.display = 'grid';
+            if (asset.source_type) {
+                document.getElementById('edit_source_type').value = asset.source_type;
+            }
+            updateSourceOptions('edit', asset.source_id);
+        } else {
+            document.getElementById('edit_source_selection').style.display = 'none';
+        }
         
         modal.classList.remove('hidden');
     }
