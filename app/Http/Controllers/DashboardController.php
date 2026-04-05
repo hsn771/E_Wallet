@@ -56,7 +56,7 @@ class DashboardController extends Controller
         $liabilities = Liability::where('user_id', $user->id)->get();
 
         // 5. Recent Transactions
-        $recentTransactions = Transaction::with(['category', 'wallet'])
+        $recentTransactions = Transaction::with(['category', 'wallet', 'asset'])
             ->where('user_id', $user->id)
             ->orderBy('date', 'desc')
             ->orderBy('created_at', 'desc')

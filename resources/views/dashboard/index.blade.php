@@ -161,7 +161,7 @@
                                         {{ $tx->category ? $tx->category->name : 'Uncategorized' }}
                                     </p>
                                     <p class="text-xs text-slate-500">{{ $tx->date->format('M d, Y') }} &bull;
-                                        {{ $tx->wallet ? $tx->wallet->name : 'Asset Payment' }}
+                                        {{ $tx->wallet ? $tx->wallet->name : ($tx->asset ? $tx->asset->name : 'N/A') }}
                                     </p>
                                 </div>
                             </div>

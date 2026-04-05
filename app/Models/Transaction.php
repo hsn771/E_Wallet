@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Transaction extends Model
 {
     protected $fillable = [
-        'user_id', 'wallet_id', 'category_id', 'type', 
+        'user_id', 'wallet_id', 'asset_id', 'category_id', 'type', 
         'amount', 'description', 'date', 'reference'
     ];
 
@@ -28,5 +28,10 @@ class Transaction extends Model
     public function category()
     {
         return $this->belongsTo(Category::class);
+    }
+
+    public function asset()
+    {
+        return $this->belongsTo(Asset::class);
     }
 }

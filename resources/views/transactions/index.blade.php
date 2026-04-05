@@ -52,7 +52,7 @@
                 <tr class="border-b border-slate-700 text-slate-400 text-sm tracking-wide">
                     <th class="pb-3 px-4 font-medium h-12">Date</th>
                     <th class="pb-3 px-4 font-medium h-12">Details</th>
-                    <th class="pb-3 px-4 font-medium h-12">Wallet</th>
+                    <th class="pb-3 px-4 font-medium h-12">Account</th>
                     <th class="pb-3 px-4 font-medium text-right h-12">Amount</th>
                 </tr>
             </thead>
@@ -77,8 +77,8 @@
                             </div>
                         </td>
                         <td class="py-4 px-4">
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
-                                {{ $tx->wallet ? $tx->wallet->name : 'Asset' }}
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $tx->wallet_id ? 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20' : 'bg-amber-500/10 text-amber-400 border-amber-500/20' }} border">
+                                {{ $tx->wallet ? $tx->wallet->name : ($tx->asset ? $tx->asset->name : 'N/A') }}
                             </span>
                         </td>
                         <td class="py-4 px-4 text-right">
@@ -150,11 +150,20 @@
                 </div>
 
                 <div class="col-span-2">
-                    <label class="block text-sm font-medium text-slate-300 mb-1">Wallet</label>
-                    <select name="wallet_id" required class="w-full bg-slate-900 border border-slate-700 focus:border-indigo-500 rounded-xl px-4 py-3 text-white">
-                        @foreach($wallets as $wallet)
-                            <option value="{{ $wallet->id }}">{{ $wallet->name }} (Balance: {{ number_format($wallet->balance, 0) }})</option>
-                        @endforeach
+                    <label class="block text-sm font-medium text-slate-300 mb-1">Account (Wallet/Asset)</label>
+                    <select name="account" required class="w-full bg-slate-900 border border-slate-700 focus:border-indigo-500 rounded-xl px-4 py-3 text-white">
+                        <optgroup label="Wallets">
+                            @foreach($wallets as $wallet)
+                                <option value="wallet:{{ $wallet->id }}">{{ $wallet->name }} (Balance: {{ number_format($wallet->balance, 0) }})</option>
+                            @endforeach
+                        </optgroup>
+                        @if($assets->count() > 0)
+                            <optgroup label="Assets">
+                                @foreach($assets as $asset)
+                                    <option value="asset:{{ $asset->id }}">{{ $asset->name }} (Balance: {{ number_format($asset->value, 0) }})</option>
+                                @endforeach
+                            </optgroup>
+                        @endif
                     </select>
                 </div>
 
